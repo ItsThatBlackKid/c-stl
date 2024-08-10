@@ -10,8 +10,12 @@ TARGETS = vec linked_list stl
 
 all: $(TARGETS)
 
-vec: vec.o $(EG_DIR)vectors.c 
-	gcc -Wall -Werror -o $@ $(EG_DIR)vectors.c $(patsubst %,$(BIN_DIR)%,$<) -g
+vec: vec.o
+	gcc -Wall -Werror -o $@ $(EG_DIR)vectors.c $(patsubst %,$(BIN_DIR)%,$^) -g
+
+list: linked_list.o
+	gcc -Wall -Werror -o $@ $(EG_DIR)list.c $(patsubst %,$(BIN_DIR)%,$^)  -g
+
 
 %.o : $(LIB_DIR)%.c
 	gcc -Wall -Werror -c $^ -o $(BIN_DIR)$@ -g
@@ -22,6 +26,7 @@ linked_list: $(EG_DIR)linked_list.c $(BIN_DIR)linked_list.o
 
 stl: $(OBJ)
 	gcc -Wall -Werror -c $(patsubst $(LIB_DIR)%,$(BIN_DIR)%,$<) -o $@
+
 clean:
 	- rm $(BIN_DIR)*.o
 	- rm $(EG_DIR)*.o
@@ -29,3 +34,5 @@ clean:
 
 clean_vec: 
 	- rm vec
+clean_list:
+	- rm list

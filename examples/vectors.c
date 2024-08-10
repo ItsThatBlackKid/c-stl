@@ -1,28 +1,6 @@
 #include "../lib/vec.h"
 #include <stdio.h>
 
-void vec_print(vec *v) {
-    int size = v->length;
-    int capacity = v->capacity;
-
-    printf("vec: length=%d, capacity=%d, contents=", size, capacity);
-
-    printf("[");
-    for (int i = 0; i < size; ++i) {
-        int *data = (int* )vec_get(v, i);
-        if (data == NULL) {
-            printf("NULL");
-        }
-        else
-            printf("%d",*data);
-
-
-        if( i != size -1) {
-            printf(", ");
-        }
-    }
-    printf("]\n");
-}
 
 int main(void)
 {
@@ -54,6 +32,7 @@ int main(void)
     vec_print(v);
 
     // remove from i-th position
+    printf("removing element at 6-th index in array\n");
     vec_remove(v,6);
     vec_print(v);
 
@@ -69,11 +48,27 @@ int main(void)
     vec_insert(v, data,14);
     vec_print(v);
 
-    // //insert at  i > v->capacity > v->length
-    // *data = 100;
-    // vec_insert(v, data,30);
-    // vec_print(v);
+    //insert at  i > v->capacity > v->length
+    printf("insert 100 at 30-th index\n");
+    *data = 100;
+    vec_insert(v, data,30);
+    vec_print(v);
 
+    // pop vector
+    printf("popping vector\n");
+    int *popped = vec_pop(v);
+    printf("popped:%d\n", *popped);
+    vec_print(v);
+
+    // copy vector
+    printf("copying vector\n");
+    vec* v2 = vec_clone(v);
+    *data = 10;
+    vec_push(v2,data);
+    printf("original vec: ");
+    vec_print(v);
+    printf("copied vec: ");
+    vec_print(v2);
 
     free(data);
     free(v);

@@ -37,7 +37,7 @@ void *vec_get(vec *v, int i)
  * @param data: The new element that needs to be inserted.
  * @param i: The index at which the element should be inserted.
  *
- * @return 1 if insertion is successful, -1 if memory allocation fails.
+ * @return 1 if insertion is successful, -1 if memory allocation fails. 0 if the provided pointer is null.
  */
 int vec_insert(vec *v, void *data, int i)
 {
@@ -58,10 +58,9 @@ int vec_insert(vec *v, void *data, int i)
     if (i >= v->length)
     {
         int deltaLength = i - v->length;
-        if(deltaLength > 0)
-            memset(v->data + (i * v->typeSize), 0, deltaLength * v->typeSize);
+        if (deltaLength > 0)
+            memset(v->data + (v->length * v->typeSize), 0, deltaLength * v->typeSize);
 
-        
         v->length += deltaLength + 1;
     }
 
@@ -91,6 +90,15 @@ int vec_insert_front(vec *v, void *data)
     return vec_insert(v, data, 0);
 };
 
+/**
+ * @brief 
+ * Add an element at thegiven index. If the index is out of bounds this function returns 0. If the insertion fails due to insufficient memory, this function returns -1. If the insertion is successful, it returns 1.
+ * 
+ * @param v - vector pointer.
+ * @param i - index.
+ * @param value  - value.
+ * @return int - 1 on success. -1 on failure. 0 on out of bounds index.
+ */
 int vec_set(vec *v, int i, void *value)
 {
     if (i > v->length || i < 0)
@@ -100,13 +108,10 @@ int vec_set(vec *v, int i, void *value)
 
     if ((void *)value != NULL)
     {
-        void *old = vec_get(v, i);
-        if (old != NULL)
-        {
-            free(old);
-        }
+        if(!vec_get(v,i)) return -1;
+
         memmove(v->data + i * v->typeSize, value, v->typeSize);
-        return 1;
+        return vec_insert(v,value, i);
     }
     else
     {
@@ -142,10 +147,14 @@ int vec_remove(vec *v, int i)
     return 1;
 };
 
-int vec_pop(vec *v)
+void* vec_pop(vec *v)
 {
     int end = v->length - 1;
-    return vec_remove(v, end);
+    void* data = vec_get(v, end);
+
+    if(!vec_remove(v,end)) return NULL;
+
+    return data;
 };
 int _vec_copy_to_empty(const vec *src, const vec *dest)
 {
@@ -158,17 +167,38 @@ int _vec_copy_to_empty(const vec *src, const vec *dest)
     return 1;
 }
 
-int vec_copy(const vec *src, vec *dest)
+vec* vec_clone(const vec *v)
 {
-    if (src == NULL)
-        return 0;
+    if (v == NULL)
+        return NULL;
+    vec* clone = vec_create(v->capacity, v->typeSize);
+    clone->length = v->length;
+    memcpy(clone->data, v->data, v->length * v->typeSize);
+    return clone;
+}
 
-    if (dest == NULL)
-        return _vec_copy_to_empty(src, dest);
+void vec_print(vec *v)
+{
+    int size = v->length;
+    int capacity = v->capacity;
 
-    if (dest->capacity < src->length || dest->typeSize != src->typeSize)
-        return 0;
-    memcpy(dest->data, src->data, src->length * src->typeSize);
-    dest->length = src->length;
-    return 1;
+    printf("vec: length=%d, capacity=%d, contents=", size, capacity);
+
+    printf("[");
+    for (int i = 0; i < size; ++i)
+    {
+        int *data = (int *)vec_get(v, i);
+        if (data == NULL)
+        {
+            printf("NULL");
+        }
+        else
+            printf("%d", *data);
+
+        if (i != size - 1)
+        {
+            printf(", ");
+        }
+    }
+    printf("]\n");
 }

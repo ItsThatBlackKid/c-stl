@@ -5,22 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run Vec Target",
-            "type": "cppdbg",
-            "program": "${workspaceRoot}/vec",
-            "request": "launch",
-            "miDebuggerPath": "/usr/bin/gdb",
-            "setupCommands": [
-                {
-                    "description": "Build vec target",
-                    "text": "make vec",
-                }
-            ],
-            "args": ["vec"],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "name": "(gdb) Launch",
+            "name": "Run vec",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/vec",
@@ -39,6 +24,27 @@
             ],
             "preLaunchTask": "build vec",
             "postDebugTask": "clean vec"
+        },
+        {
+            "name": "Run list",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/list",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+            ],
+            "preLaunchTask": "build list",
+            "postDebugTask": "clean list"
         },
         {
             "name": "Run Vec Target",

@@ -6,7 +6,8 @@
         "array": "c",
         "linked_list.h": "c",
         "vec.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "random": "c"
     },
     "C_Cpp.default.compilerPath": "/usr/bin/gcc"
 }

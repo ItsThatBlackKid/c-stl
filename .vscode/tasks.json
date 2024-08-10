@@ -10,6 +10,16 @@
             "label": "build vec",
             "command": "make vec",
             "type": "shell"
-        }
+        },
+          {
+            "label": "clean list",
+            "command": "make clean_list",
+            "type": "shell"
+        },
+        {
+            "label": "build list",
+            "command": "make list",
+            "type": "shell"
+        },
     ]
 }
