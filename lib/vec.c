@@ -1,4 +1,5 @@
 #include "vec.h"
+#include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -48,14 +49,26 @@ int vec_insert(vec *v, void *data, int i)
 
     if (i >= v->capacity)
     {
-        v->capacity = v->capacity * 2;
-        v->data = realloc(v->data, v->capacity * v->typeSize);
+        v->capacity = max(i + 10, v->capacity * 2);
+         v->data = realloc(v->data, v->capacity * v->typeSize);
 
         if (v->data == NULL)
             return -1;
     }
 
-    if (i >= v->length)
+    if (i >= 0 && (i < v->length))
+    {
+        // move the elements after i to the right by one
+        void *moved =
+            memmove(v->data + (i * v->typeSize), v->data + ((i - 1) * v->typeSize), (v->length - i) * v->typeSize);
+        if (!moved)
+        {
+            return -1;
+        }
+
+        v->length++;
+    }
+    else if (i >= v->length)
     {
         int deltaLength = i - v->length;
         if (deltaLength > 0)
@@ -85,38 +98,34 @@ int vec_push(vec *v, void *data)
     return vec_insert(v, data, v->length);
 };
 
-int vec_insert_front(vec *v, void *data)
+int vec_push_front(vec *v, void *data)
 {
     return vec_insert(v, data, 0);
 };
 
 /**
- * @brief 
- * Add an element at thegiven index. If the index is out of bounds this function returns 0. If the insertion fails due to insufficient memory, this function returns -1. If the insertion is successful, it returns 1.
- * 
+ * @brief
+ * Add an element at thegiven index. If the index is out of bounds this function returns 0. If the insertion fails due
+ * to insufficient memory, this function returns -1. If the insertion is successful, it returns 1.
+ *
  * @param v - vector pointer.
  * @param i - index.
  * @param value  - value.
  * @return int - 1 on success. -1 on failure. 0 on out of bounds index.
  */
-int vec_set(vec *v, int i, void *value)
+int vec_set(vec *v, void *value, int i)
 {
-    if (i > v->length || i < 0)
     {
         return 0;
     }
 
-    if ((void *)value != NULL)
-    {
-        if(!vec_get(v,i)) return -1;
+    if (!vec_get(v, i))
+        return -1;
 
-        memmove(v->data + i * v->typeSize, value, v->typeSize);
-        return vec_insert(v,value, i);
-    }
-    else
-    {
-        return vec_insert(v, 0, i);
-    }
+    // replace element at index with new value.
+    // replace with O if new value is NULL.
+    void *moved = memmove(v->data + i * v->typeSize, value ? value : 0, v->typeSize);
+    return moved ? 1 : -1;
 };
 
 int vec_remove(vec *v, int i)
@@ -147,12 +156,13 @@ int vec_remove(vec *v, int i)
     return 1;
 };
 
-void* vec_pop(vec *v)
+void *vec_pop(vec *v)
 {
     int end = v->length - 1;
-    void* data = vec_get(v, end);
+    void *data = vec_get(v, end);
 
-    if(!vec_remove(v,end)) return NULL;
+    if (!vec_remove(v, end))
+        return NULL;
 
     return data;
 };
@@ -167,11 +177,11 @@ int _vec_copy_to_empty(const vec *src, const vec *dest)
     return 1;
 }
 
-vec* vec_clone(const vec *v)
+vec *vec_clone(const vec *v)
 {
     if (v == NULL)
         return NULL;
-    vec* clone = vec_create(v->capacity, v->typeSize);
+    vec *clone = vec_create(v->capacity, v->typeSize);
     clone->length = v->length;
     memcpy(clone->data, v->data, v->length * v->typeSize);
     return clone;
@@ -184,8 +194,13 @@ void vec_print(vec *v)
 
     printf("vec: length=%d, capacity=%d, contents=", size, capacity);
 
+    vec_print_els(v, 1);
+}
+
+void vec_print_els(vec *v, int new_line)
+{
     printf("[");
-    for (int i = 0; i < size; ++i)
+    for (int i = 0; i < v->length; ++i)
     {
         int *data = (int *)vec_get(v, i);
         if (data == NULL)
@@ -195,10 +210,27 @@ void vec_print(vec *v)
         else
             printf("%d", *data);
 
-        if (i != size - 1)
+        if (i != v->length - 1)
         {
             printf(", ");
         }
     }
-    printf("]\n");
+
+    printf("]");
+    if(new_line) printf("\n");
+}
+
+void vec2d_print(vec *v) {
+    int size = v->length;
+    int capacity = v->capacity;
+
+    printf("vec: length=%d, capacity=%d, contents=\n[", size, capacity);
+
+    for(int i =0; i < size; ++i) {
+        vec_print_els((vec*)vec_get(v, i),0);
+        if(i != size-1) {
+            printf(",\n");
+        }
+    }
+    printf("]");
 }

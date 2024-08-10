@@ -2,6 +2,24 @@
 #include <stdio.h>
 
 
+void vec2d_examples() {
+    // 2D vector example:
+    vec *tensor = vec_create(10, sizeof(vec) + 5 * sizeof(int)); // 10 rows, 5 cols
+    for (int i = 0; i < tensor->capacity; i++)
+    {
+        vec *row = vec_create(5, sizeof(int)); // 5 cols in each row
+        for (int j = 0; j < 5; j++)
+        {
+            int *data = malloc(sizeof(int));
+            *data = i + j;
+            vec_push(row, data);
+        }
+        vec_push(tensor, row);
+    }
+
+    vec2d_print(tensor);
+}
+
 int main(void)
 {
     vec *v = vec_create(10, sizeof(int));
@@ -70,6 +88,27 @@ int main(void)
     printf("copied vec: ");
     vec_print(v2);
 
+    // add to the front of vector
+    printf("adding 10 at beginning\n");
+    *data = 10;
+    vec_push_front(v, data);
+    vec_print(v);
+
+    //set element at i-th position
+    printf("set element at 4-th index\n");
+    *data = 25;
+    vec_set(v, data, 4);
+    vec_print(v);
+
+    // add an element at pos v->capacity * 2 + 1
+    printf("adding 44 at position 80\n");
+    *data = 44;
+    vec_insert(v, data, v->capacity *2  + 1 );
+    vec_print(v);
+
     free(data);
     free(v);
+
+
+    vec2d_examples();
 }
