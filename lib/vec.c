@@ -42,7 +42,7 @@ void *vec_get(vec *v, int i)
  */
 int vec_insert(vec *v, void *data, int i)
 {
-    if ((void *)data == NULL)
+    if ( v == NULL || (void *)data == NULL)
     {
         return 0;
     }

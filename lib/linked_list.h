@@ -26,7 +26,8 @@ struct list
  */
 
 List *create_list();
-void list_push_back(List *list, void *data);
+int list_push_back(List *list, void *data);
+int list_push_front(List *list, void *data);
 /**
  * @brief Removes node at pos in O(n/2) time. Or O(1) if pos == size - 1 || pos == 0.
  *
@@ -34,7 +35,7 @@ void list_push_back(List *list, void *data);
  * @param pos
  * @return int negative if pos is out of bounds. 1 if successful.
  */
-int list_remove_at(List *list, int pos);
+void * list_remove_at(List *list, int pos);
 /**
  * @brief Retrieves node at index in O(n/2) time
  *
@@ -43,6 +44,7 @@ int list_remove_at(List *list, int pos);
  * @return Node* - node at index
  */
 Node *list_find_node(List *list, int index);
+int list_set(List *list, int index, void *data);
 /**
  * @brief Retrieves data at index in O(n/2) time
  *
@@ -50,7 +52,7 @@ Node *list_find_node(List *list, int index);
  * @param index
  * @return void*
  */
-void *list_get_data(List *list, int index);
+void *list_get(List *list, int index);
 /**
  * @brief Frees memory used by list and all nodes.
  *
@@ -64,6 +66,30 @@ void list_destroy(List *list);
  */
 void list_clear_nodes(List *list);
 void print_list(List *list);
+void* list_pop_front(List *list);
+
+int list_empty(List *list);
+
+void list_sort(List *list, int(*compare)(void* a, void*b));
+
+void list_merge_sort(List *list, int left, int right, int(*compare)(void*, void*));
+
+void _list_merge_sort(List *list, int left, int mid, int right, int(*compare)(void*, void*));
+
+/**
+ * @brief Splits list at the given index range.
+ * Selects nodes at position i where start <= i <= end i.e.[start,end]
+ * 
+ * @param list 
+ * @param start - start of range to split
+ * @param end - end of range to split
+ * @return List* 
+ */
+List *list_detach(List *list, int start, int end);
+List* list_split(List *list, int front);
+List* list_merge(List *list1, List *list2);
+
+size_t list_size(List *list);
 
 /**
  * Node functions
@@ -78,4 +104,5 @@ Node *create_node(void *data, Node *prev, Node *next);
  *
  */
 void free_node(Node *node);
+
 #endif
