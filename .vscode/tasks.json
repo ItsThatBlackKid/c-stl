@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "clean vec",
+            "command": "make clean_vec",
+            "type": "shell"
+        },
+        {
+            "label": "build vec",
+            "command": "make vec",
+            "type": "shell"
+        }
+    ]
+}

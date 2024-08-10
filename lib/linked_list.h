@@ -1,3 +1,6 @@
+
+#ifndef LINKED_LIST_H
+#define LINKED_LIST_H
 typedef struct node Node;
 typedef struct list List;
 
@@ -17,4 +20,4 @@ struct list
 };
 
 
-
+#endif
