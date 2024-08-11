@@ -92,6 +92,11 @@ void free_node(Node *node)
 {
     node->data = NULL; // free
     free(node);
+}
+void swap_data(Node *a, Node *b) {
+    void *tmp = a->data;
+    a->data  = b->data;
+    b->data  = tmp;
 };
 
 Node *list_find_node(List *list, int index)
@@ -206,64 +211,59 @@ void *list_pop_front(List *list)
     return list_remove_at(list, 0);
 };
 
-void _list_merge_sort(List *list, int left, int mid, int right, int (*compare)(void *, void *))
-{
-    int n1 = mid - left + 1;
-    int n2 = right - mid;
+Node* sorted_merge_nodes(Node* a, Node* b, int (*compare)(void*, void*)) {
+    Node* res = NULL;
+    if(a == NULL) { return b;}
+        else if (b == NULL) {return a;}
 
-    void **L = malloc((n1 + 1) * sizeof(list->head->data));
-    void **R = malloc((n2 + 1) * sizeof(list->head->data));
-
-    // fill the temp arrays
-    for (int i = 0; i < n1; ++i)
-    {
-        L[i] = list_find_node(list, i + left)->data;
+    if(compare(a->data, b->data) <=0 ) {
+        res = a;
+         res->next = sorted_merge_nodes(a->next,b, compare);
+         return res;
+    } else {
+        res = b;
+        res->next = sorted_merge_nodes(a,b->next, compare);
     }
 
-    for (int j = 0; j < n2; ++j)
-    {
-        R[j] = list_find_node(list, mid + 1 + j)->data; // after left is filled, head is at the right
-    }
-    int i = 0, j = 0;
-    int k = left;
-    // merge the two temp arrays
-
-    while (i < n1 && j < n2)
-    {
-        if (compare(L[i], R[j]) <= 0)
-        {
-            list_set(list, k++, L[i]);
-            i++;
-        }
-        else
-        {
-            list_set(list, k++, R[j]);
-            j++;
-        }
-    }
-
-    while (i < n1)
-    {
-        list_set(list, k++, L[i]);
-        i++;
-    }
-
-    while (j < n2)
-    {
-        list_set(list, k++, R[j]);
-        j++;
-    }
+    return res;
 }
 
-void list_merge_sort(List *list1, int left, int right, int (*compare)(void *a, void *b))
-{
-    if (left >= right)
-        return;
+List* sorted_merge(List* a, List* b, List* l1, int (*compare)(void*, void*)) {
+    l1->head = sorted_merge_nodes(a->head,b->head, compare);
+    return l1;
+}
 
-    int mid = left + (right - left) / 2;
-    list_merge_sort(list1, left, mid, compare);
-    list_merge_sort(list1, mid + 1, right, compare);
-    _list_merge_sort(list1, left, mid, right, compare);
+void split_nodes(Node* head, Node** frontRef, Node** rightRef) {
+    Node* fast;
+    Node* slow;
+    slow = head;
+    fast = slow->next;
+
+    while (fast != NULL ) {
+        fast = fast->next;
+        if(fast != NULL) {
+            slow = slow->next;
+            fast = fast->next;
+        }
+    }
+
+    *frontRef = head;
+    *rightRef = slow->next;
+     slow->next = NULL;
+}
+
+void merge_sort_stuff(Node** headRef, int (*compare)(void*, void*)) {
+    Node* head = *headRef;
+    Node* left; Node* right;
+
+    if( head == NULL || head->next == NULL) return;
+
+    split_nodes(head,&left,&right);
+
+    merge_sort_stuff(&left, compare);
+    merge_sort_stuff(&right,compare);
+
+    *headRef = sorted_merge_nodes(left,right, compare);
 }
 
 List *list_detach(List *list, int start, int end)
@@ -322,5 +322,8 @@ List *list_merge(List *list1, List *list2)
 
 void list_sort(List *list, int (*cmp)(void *, void *))
 {
-    list_merge_sort(list, 0, (list->size) - 1, cmp);
+    if (list_empty(list) || list->head == NULL)
+        return;
+
+    merge_sort_stuff(&list->head, cmp);
 }

@@ -19,6 +19,7 @@ struct list
     Node *head;
     Node *tail;
     int size;
+    int dataSize;
 };
 
 /**
@@ -72,9 +73,9 @@ int list_empty(List *list);
 
 void list_sort(List *list, int(*compare)(void* a, void*b));
 
-void list_merge_sort(List *list, int left, int right, int(*compare)(void*, void*));
+void list_merge_sort(List *list, int(*compare)(void*, void*));
 
-void _list_merge_sort(List *list, int left, int mid, int right, int(*compare)(void*, void*));
+void _list_merge_sort(List *list, int(*compare)(void*, void*));
 
 /**
  * @brief Splits list at the given index range.
@@ -104,5 +105,9 @@ Node *create_node(void *data, Node *prev, Node *next);
  *
  */
 void free_node(Node *node);
+
+void swap_data(Node *a, Node *b);
+
+Node *sorted_merge_nodes(Node *a, Node *b, int (*compare)(void *, void *));
 
 #endif
